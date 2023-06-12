@@ -14,6 +14,7 @@ def get_Redshift_connection(autocommit=True):
 
 @task
 def get_world_info():
+    # logging
     logging.info("extract started")
     # 웹에서 JSON 데이터 가져오기
     url = "https://restcountries.com/v3/all"
