@@ -47,14 +47,15 @@ def load(schema, table, records):
         cur.execute("BEGIN;")
         # 기존 테이블이 있으면 삭제
         cur.execute(f"DROP TABLE IF EXISTS {schema}.{table};")
-        cur.execute(f"CREATE TABLE IF NOT EXISTS {schema}.{table} (
+        cur.execute(f"""CREATE TABLE IF NOT EXISTS {schema}.{table} (
             country VARCHAR,
             population INT,
             area FLOAT
-        );")
+        );""")
 
         for r in records:
-            cur.execute(f"INSERT INTO {schema}.{table} VALUES ('{r[0]}',{r[1]},{r[2]});")
+            # SQL Injection 공격을 방지하기 위해 parameterized query 사용
+            cur.execute(f"INSERT INTO {schema}.{table} VALUES (%s, %s, %s);", (r[0], r[1], r[2]))
 
         cur.execute("COMMIT;")   # cur.execute("END;")
     except Exception as error:
