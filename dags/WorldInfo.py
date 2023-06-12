@@ -46,11 +46,11 @@ def load(schema, table, records):
     try:
         cur.execute("BEGIN;")
         # 기존 테이블이 있으면 삭제
-        cur.execute("DROP TABLE IF EXISTS {schema}.{table};")
-        cur.execute("CREATE TABLE IF NOT EXISTS {schema}.{table};")
+        cur.execute(f"DROP TABLE IF EXISTS {schema}.{table};")
+        cur.execute(f"CREATE TABLE IF NOT EXISTS {schema}.{table};")
 
         for r in records:
-            cur.execute("INSERT INTO {schema}.{table} VALUES ('{r[0]}',{r[1]},{r[2]});")
+            cur.execute(f"INSERT INTO {schema}.{table} VALUES ('{r[0]}',{r[1]},{r[2]});")
 
         cur.execute("COMMIT;")   # cur.execute("END;")
     except Exception as error:
