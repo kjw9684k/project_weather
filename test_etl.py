@@ -14,8 +14,6 @@ import logging
 
 class TestETL(unittest.TestCase):
     
-    @patch('dags.Project_Weather_v2.requests.get')
-    @patch('dags.Project_Weather_v2.get_Redshift_connection')
     def test_etl(self, mock_get_Redshift_connection, mock_get):
         
         # 테스트용 데이터
