@@ -14,8 +14,8 @@ import logging
 
 class TestETL(unittest.TestCase):
     
-    @patch('etl.requests.get')
-    @patch('etl.get_Redshift_connection')
+    @patch('requests.get')
+    @patch('get_Redshift_connection')
     def test_etl(self, mock_get_Redshift_connection, mock_get):
         
         # 테스트용 데이터
