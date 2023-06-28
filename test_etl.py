@@ -8,14 +8,14 @@ from datetime import timedelta
 
 import requests
 import logging
-
+import psycopg2
 
 
 
 class TestETL(unittest.TestCase):
     
-    @patch('requests.get')
-    @patch('get_Redshift_connection')
+    @patch('test_etl.requests.get')
+    @patch('test_etl.get_Redshift_connection')
     def test_etl(self, mock_get_Redshift_connection, mock_get):
         
         # 테스트용 데이터
@@ -42,7 +42,7 @@ class TestETL(unittest.TestCase):
         mock_get_Redshift_connection.return_value = mock_cursor
 
         # etl 함수를 호출
-        etl('schema', 'table', '2023-06-28T00:00:00Z', 'api_key', 'weather_url')
+        etl('schema', 'table', '2023-06-28T00:00:00Z', 'api_key', 'weather_url', get_Redshift_connection)
 
         # HTTP 요청이 올바르게 이루어졌는지 확인
         mock_get.assert_called_once_with('weather_url', params={'serviceKey' : 'api_key', 'pageNo' : '1', 'numOfRows' : '1000', 'dataType' : 'JSON', 'base_date' : '20230628', 'base_time' : '0000', 'nx' : '55', 'ny' : '127'}, timeout=30)
@@ -51,6 +51,16 @@ class TestETL(unittest.TestCase):
         # (예를 들어, 원하는 쿼리를 실행했는지 확인하는 등의 추가적인 단언문을 추가할 수 있습니다.)
         assert mock_cursor.execute.call_count >= 1
 
+
+def get_Redshift_connection():
+    host = "learnde.cduaw970ssvt.ap-northeast-2.redshift.amazonaws.com"
+    redshift_user = "keeyong"  # 본인 ID 사용
+    redshift_pass = "..."  # 본인 Password 사용
+    port = 5439
+    dbname = "dev"
+    conn = psycopg2.connect(f"dbname={dbname} user={redshift_user} host={host} password={redshift_pass} port={port}")
+    conn.set_session(autocommit=True)
+    return conn.cursor()
 
 
 
