@@ -50,7 +50,10 @@ def etl(schema, table, execution_date, api_key, weather_url, get_connection):
         data_dict = defaultdict(dict)
         for d in data:
             day = datetime.strptime(d["baseDate"]+d["fcstTime"],'%Y%m%d%H%M')
-            if d['fcstValue'] == '강수없음':
+            if d['category'] == 'RN1' and d['fcstValue'].endswith('mm'):
+                # 'mm'를 제거하고 float형으로 변환하여 저장합니다.
+                data_dict[day][d['category']] = float(d['fcstValue'].replace('mm', ''))
+            elif d['fcstValue'] == '강수없음':
                 data_dict[day][d['category']] = '0'
             else:
                 data_dict[day][d['category']] = d['fcstValue']
@@ -72,7 +75,7 @@ def etl(schema, table, execution_date, api_key, weather_url, get_connection):
     date timestamp,
     LGT int,
     PTY int,
-    RN1 int,
+    RN1 float,
     SKY int,
     TEMP int,
     REH int,
@@ -149,3 +152,4 @@ etl_task = PythonOperator(
 )
 
 etl_task
+
